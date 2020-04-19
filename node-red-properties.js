@@ -10,15 +10,15 @@ class NodeRedProperties {
 
     // might not a good idea to run this after handlers have been set up as each of the properties will be set in turn, triggering the handlers
     init (config) {
-        let configs = Object.keys(this.properties);
-        for (let c of configs) {
-            let property = this.properties[c];
+        const configs = Object.keys(this.properties);
+        for (const c of configs) {
+            const property = this.properties[c];
             if (!property) {
                 continue;
             }
-            if(config.hasOwnProperty(c)){
+            if (c in config) {
                 this.set(c, config[c]);
-            } else if (property.hasOwnProperty('value')) {
+            } else if ('value' in property) {
                 this.set(c, property.value);
             }
         }
@@ -30,16 +30,16 @@ class NodeRedProperties {
     }
 
     inputProperties (msg) {
-        for (let property in this.properties) {
-            if (msg.hasOwnProperty(property)) {
-                let val = msg[property];
+        for (const property in this.properties) {
+            if (property in msg) {
+                const val = msg[property];
                 this.set(property, val);
             }
         }
     }
 
     inputPayload (msg) {
-        for (let property in this.properties) {
+        for (const property in this.properties) {
             if (msg.topic === property) {
                 this.set(property, msg.payload);
             }
@@ -60,8 +60,8 @@ class NodeRedProperties {
         }
 
         if (Array.isArray(key)) {
-            for(let key_ of key){
-                this.handle (handler, key_, prepost);
+            for (const key_ of key) {
+                this.handle(handler, key_, prepost);
             }
             return;
         }
@@ -95,7 +95,7 @@ class NodeRedProperties {
 
         const property = this.properties[key];
 
-        for (let handlerprop of ['prehandler', 'handler', 'posthandler']) {
+        for (const handlerprop of ['prehandler', 'handler', 'posthandler']) {
             if ((typeof property[handlerprop]) === 'function') {
                 property[handlerprop](val, key, this.node);
             } else if ((typeof this[handlerprop]) === 'function') {

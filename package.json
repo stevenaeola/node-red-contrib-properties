@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
-  },
+    },
     "keywords": [
         "node",
         "red",
@@ -13,5 +13,8 @@
         "properties"
     ],
     "author": "s.p.bradley@durham.ac.uk",
-    "license": "ISC"
+    "license": "ISC",
+    "devDependencies": {
+        "eslint": "^6.8.0"
+    }
 }
