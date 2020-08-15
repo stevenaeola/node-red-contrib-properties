@@ -8,7 +8,7 @@ class NodeRedProperties {
         this.init(config);
     }
 
-    // might not a good idea to run this after handlers have been set up as each of the properties will be set in turn, triggering the handlers
+    // might not be a good idea to run this after handlers have been set up as each of the properties will be set in turn, triggering the handlers
     init (config) {
         const configs = Object.keys(this.properties);
         for (const c of configs) {
@@ -33,7 +33,7 @@ class NodeRedProperties {
         for (const property in this.properties) {
             if (property in msg) {
                 const val = msg[property];
-                this.set(property, val);
+                this.set(property, val, msg);
             }
         }
     }
@@ -41,13 +41,14 @@ class NodeRedProperties {
     inputPayload (msg) {
         for (const property in this.properties) {
             if (msg.topic === property) {
-                this.set(property, msg.payload);
+                this.set(property, msg.payload, msg);
             }
         }
     }
 
     // define a function to handle the setting of a property
     // if the property is undefined then apply the handler to all properties
+    // a handler function takes the value, the message and the property name
 
     handle (handler, key, prepost) {
         if ((typeof handler) !== 'function') {
@@ -87,7 +88,7 @@ class NodeRedProperties {
         this.handle(handler, key, 'post');
     }
 
-    set (key, val) {
+    set (key, val, msg) {
         if (!Object.keys(this.properties).includes(key)) {
             this.node.warn(key + ' is not a property');
             return;
@@ -97,15 +98,23 @@ class NodeRedProperties {
 
         for (const handlerprop of ['prehandler', 'handler', 'posthandler']) {
             if ((typeof property[handlerprop]) === 'function') {
-                property[handlerprop](val, key, this.node);
+                property[handlerprop](val, msg, key);
             } else if ((typeof this[handlerprop]) === 'function') {
-                this[handlerprop](val, key, this.node);
+                this[handlerprop](val, msg, key);
             } else {
                 if (handlerprop === 'handler') {
                     this.node[key] = val;
                 }
             }
         }
+    }
+
+    get (key) {
+        if (!Object.keys(this.properties).includes(key)) {
+            this.node.warn(key + ' is not a property');
+            return;
+        }
+        return this.properties[key];
     }
 }
 
