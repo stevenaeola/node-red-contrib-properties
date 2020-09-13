@@ -114,7 +114,7 @@ class NodeRedProperties {
             this.node.warn(key + ' is not a property');
             return;
         }
-        return this.properties[key];
+        return this.node[key];
     }
 }
 
