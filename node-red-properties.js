@@ -103,10 +103,18 @@ class NodeRedProperties {
                 this[handlerprop](val, msg, key);
             } else {
                 if (handlerprop === 'handler') {
-                    this.node[key] = val;
+                    this.setRaw(key, val);
                 }
             }
         }
+    }
+
+    setRaw (key, val) {
+        if (!Object.keys(this.properties).includes(key)) {
+            this.node.warn(key + ' is not a property');
+            return;
+        }
+        this.node[key] = val;
     }
 
     get (key) {
