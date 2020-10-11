@@ -5,10 +5,11 @@ class NodeRedProperties {
         // object with property names for the keys. The values are objects with properties similar to the 'defaults' propery used by RED.nodes.registerType
 
         this.properties = properties || {};
+        this.contextNames = {};
+        this.contextName = 'node';
         this.init(config);
     }
 
-    // might not be a good idea to run this after handlers have been set up as each of the properties will be set in turn, triggering the handlers
     init (config) {
         const configs = Object.keys(this.properties);
         for (const c of configs) {
@@ -17,9 +18,9 @@ class NodeRedProperties {
                 continue;
             }
             if (c in config) {
-                this.set(c, config[c]);
+                this.setRaw(c, config[c]);
             } else if ('value' in property) {
-                this.set(c, property.value);
+                this.setRaw(c, property.value);
             }
         }
     }
@@ -88,6 +89,33 @@ class NodeRedProperties {
         this.handle(handler, key, 'post');
     }
 
+    setContext (contextName, key) {
+        if (!['node', 'flow', 'global'].includes(contextName)) {
+            this.node.warn(contextName + ' is not an allowed context');
+            return;
+        }
+
+        if (key && !Object.keys(this.properties).includes(key)) {
+            this.node.warn(key + ' is not a property');
+        }
+
+        if (key) {
+            this.contextNames[key] = contextName;
+        } else {
+            this.contextName = contextName;
+        }
+    }
+
+    getContext (key) {
+        const contextName = this.contextNames[key] || this.contextName;
+        const nodeContext = this.node.context();
+        if (contextName === 'node') {
+            return nodeContext;
+        } else {
+            return nodeContext[contextName];
+        }
+    }
+
     set (key, val, msg) {
         if (!Object.keys(this.properties).includes(key)) {
             this.node.warn(key + ' is not a property');
@@ -114,7 +142,7 @@ class NodeRedProperties {
             this.node.warn(key + ' is not a property');
             return;
         }
-        this.node[key] = val;
+        this.getContext(key).set(key, val);
     }
 
     get (key) {
@@ -122,7 +150,7 @@ class NodeRedProperties {
             this.node.warn(key + ' is not a property');
             return;
         }
-        return this.node[key];
+        return this.getContext(key).get(key);
     }
 }
 
