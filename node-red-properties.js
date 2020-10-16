@@ -2,9 +2,10 @@ class NodeRedProperties {
     constructor (node, config, properties) {
         // the node that creates it
         this.node = node;
-        // object with property names for the keys. The values are objects with properties similar to the 'defaults' propery used by RED.nodes.registerType
 
+        // object with property names for the keys. The values are objects with properties similar to the 'defaults' propery used by RED.nodes.registerType
         this.properties = properties || {};
+
         this.contextNames = {};
         this.contextName = 'node';
         this.init(config);
@@ -99,11 +100,13 @@ class NodeRedProperties {
             this.node.warn(key + ' is not a property');
         }
 
+        const prev = this.get(key);
         if (key) {
             this.contextNames[key] = contextName;
         } else {
             this.contextName = contextName;
         }
+        this.setRaw(key, prev);
     }
 
     getContext (key) {
