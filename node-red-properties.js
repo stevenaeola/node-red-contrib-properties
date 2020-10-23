@@ -26,26 +26,37 @@ class NodeRedProperties {
         }
     }
 
+    // return true if one of the inputs matched
     input (msg) {
-        this.inputProperties(msg);
-        this.inputPayload(msg);
+        // only check the properties if the topic/payload doesn't match
+        let match = this.inputPayload(msg);
+        if (!match) {
+            match = this.inputProperties(msg);
+        }
+        return match;
     }
 
     inputProperties (msg) {
+        let match = false;
         for (const property in this.properties) {
             if (property in msg) {
                 const val = msg[property];
                 this.set(property, val, msg);
+                match = true;
             }
         }
+        return match;
     }
 
     inputPayload (msg) {
+        let match = false;
         for (const property in this.properties) {
             if (msg.topic === property) {
                 this.set(property, msg.payload, msg);
+                match = true;
             }
         }
+        return match;
     }
 
     // define a function to handle the setting of a property
