@@ -1,6 +1,6 @@
 {
     "name": "node-red-contrib-properties",
-    "version": "0.1.1",
+    "version": "1.0.0",
     "description": "Allow configuration of defined node properties at deployment and dynamically through receiving messages. Does not define any node types itself.",
     "main": "node-red-properties.js",
     "scripts": {
