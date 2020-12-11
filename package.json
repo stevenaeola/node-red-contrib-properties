@@ -4,14 +4,18 @@
     "description": "Allow configuration of defined node properties at deployment and dynamically through receiving messages. Does not define any node types itself.",
     "main": "node-red-properties.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "postversion": "git push origin && git push --tags && gren release && gren changelog --override && git add CHANGELOG.md && git commit -m \"Update CHANGELOG\" && git push -u origin master && echo \"npm publish\""
     },
     "keywords": [
-        "node",
-        "red",
+        "node-rd",
         "property",
         "properties"
     ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/stevenaeola/node-red-contrib-properties.git"
+    },
     "author": "s.p.bradley@durham.ac.uk",
     "license": "ISC",
     "devDependencies": {
